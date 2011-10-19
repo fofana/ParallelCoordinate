@@ -50,6 +50,8 @@ public class XMLFile extends SimpleParallelSpaceModel  {
     private String xml;
     private List<Visualisation> listAttribut;
     private List<Visualisation> listAttributNumeric;
+    private int nbClasse; 
+    private List<Integer> recordClasse;    
 
     /**
      * Creates a new STFFile with the given url. The content is not read until
@@ -78,6 +80,12 @@ public class XMLFile extends SimpleParallelSpaceModel  {
     public List<Visualisation> getListAttributNumeric(){
             return listAttributNumeric;
     }
+    public int getNbClasse(){
+         return nbClasse;
+    } 
+    public List<Integer> getRecordClasse(){
+        return recordClasse;
+    };
     /**
      * Reads the contents of the file and exposes them vis the ParallelSpaceModel
      * interface of the class. String values are stripped out of the model and
@@ -171,10 +179,9 @@ public void readStructure() throws Exception{
         this.setAxisLabels(tempLabels);
     }
 public void readData() throws JDOMException, IOException{
-        //int i, j, s;
-
-        String label;
-
+        //int i, j, s;  
+        recordClasse = new ArrayList<Integer>();
+        String label;        
         float curVal[];
         SAXBuilder sxb = new SAXBuilder();
         try {
@@ -185,13 +192,14 @@ public void readData() throws JDOMException, IOException{
         List listData = racine.getChildren("data");
         //On cr�e un Iterator sur notre liste
         Iterator n = listData.iterator();
+        nbClasse =0;
         while (n.hasNext()) {
             //On recr�e l'Element courant � chaque tour de boucle afin de
             //pouvoir utiliser les m�thodes propres aux Element comme :
             //selectionner un noeud fils, modifier du texte, etc...
             Element datum = (Element) n.next();
             List listDatum = datum.getChildren("datum");
-            Iterator j = listDatum.iterator();
+            Iterator j = listDatum.iterator();            
             while (j.hasNext()) {
                 int k = 0;
                 label = null;
@@ -211,7 +219,18 @@ public void readData() throws JDOMException, IOException{
                    else{
                         label = courant.getChild(visualisation.getName()).getText();
                    }
-
+                   // On récupère la classe
+                   if (visualisation.getName().equals("Classe")){
+                       int val = Integer.parseInt(courant.getChild(visualisation.getName()).getText());                       
+                       boolean vu = false;
+                       for (int i =recordClasse.size()-1; i >=0 && !vu; i--) {
+                           if (recordClasse.get(i) == val)
+                               vu = true;                          
+                       }
+                       if (!vu)
+                           nbClasse++;
+                       recordClasse.add(val);
+                   }
                 }
                 addRecord(curVal, label);
             }
@@ -222,63 +241,7 @@ public void readData() throws JDOMException, IOException{
         e.printStackTrace();
        }
     }
-//    /**
-//     * Reads the data lines.
-//     */
-//    protected void readData(Reader in) throws IOException{
-//        String line, value;
-//        int i, j, s;
-//
-//        String label;
-//
-//        float curVal[];
-//
-//        while ((line = readLine(in)) != null){
-//            curVal = new float[numDimensions];
-//
-//            j=0;
-//            s=0;
-//            label = null;
-//
-//            for (i = 0; i<tempNumDimensions; i++){
-//                value = str.nextToken();
-////                System.out.println("value " + i + ": " + value);
-//
-//                if (!isStringLabel[i]) {
-//                    try {
-//                        float val = Float.parseFloat(value);
-//                        curVal[j++] = val;
-//                    }
-//                    catch (NumberFormatException nfe){
-//                        System.out.println("Invalid Number Format: " + nfe.getMessage() + " -> dicarding & setting 0.0f");
-//                        curVal[j++] = 0.0f;
-//                    }
-//                }
-//                else {
-//                    value = value.replace('_',' ');
-//                    value = value.substring(0,1).toUpperCase() + value.substring(1);
-//
-//                    int spcidx = 0;
-//                    while ((spcidx = value.indexOf(' ', spcidx+1)) != -1){
-//                        value = value.substring(0,spcidx+1) + value.substring(spcidx+1,spcidx+2).toUpperCase() + value.substring(spcidx+2);
-//                    }
-//
-//                    if (label == null) {
-//                        label = stringLabels.elementAt(s++) + ": " + value;
-//                    }
-//                    else {
-//                        label += "\n" + stringLabels.elementAt(s++) + ": " + value;
-//                    }
-//                }
-//
-//            }
-//
-//            addRecord(curVal, label);
-//
-//        }
-//    }
 
-    
     private Vector progressListeners = new Vector();
 
     /**

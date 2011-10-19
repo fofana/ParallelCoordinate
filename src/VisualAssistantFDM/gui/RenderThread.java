@@ -13,6 +13,10 @@ import java.awt.*;
 import java.awt.image.*;
 
 import VisualAssistantFDM.model.Brush;
+import java.lang.reflect.Field;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -65,8 +69,8 @@ class RenderThread extends Thread {
     ParallelDisplay comp = null;
 
     Brush brush = null;
-
-
+    private Hashtable <Integer, String> classColor = new Hashtable<Integer, String>();               
+        
     /**
      * Creates a new RenderThread for the given ui delegate.
      *
@@ -274,16 +278,26 @@ class RenderThread extends Thread {
                 // render all records
                 int i = 0;
                 float brushVal = 0.0f;
-                Color bgcol = comp.getBackground();
-                color = comp.getColorPreference("recordColor");
-                if (brush != null){
-                    color = brush.getColor();
-                    bgcol = new Color((int)(0.1*color.getRed()+0.9*bgcol.getRed()), (int)(0.1*color.getGreen()+0.9*bgcol.getGreen()), (int)(0.1*color.getBlue()+0.9*bgcol.getBlue()));
-                }
-
-                setupRendering(g2, quality, stroke, color);
-
+                Color bgcol = comp.getBackground();                
                 for (; i<comp.getNumRecords(); i++){
+                    
+                    // Begin à faire dans la boucle for qui suit
+                    Integer classe = comp.getModel().getRecordClasse().get(i);   
+                    String couleur = Colors.getString(classe.toString());
+                    Field field;
+                    try {
+                        field = Color.class.getField(couleur);
+                        color = (Color)field.get(null);
+                    } catch (Exception ex) {
+                        Logger.getLogger(RenderThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }            
+                    //color =  Color.getColor(Colors.getString(classe.toString())); //comp.getColorPreference("recordColor");
+                    if (brush != null){
+                        color = brush.getColor();
+                        bgcol = new Color((int)(0.1*color.getRed()+0.9*bgcol.getRed()), (int)(0.1*color.getGreen()+0.9*bgcol.getGreen()), (int)(0.1*color.getBlue()+0.9*bgcol.getBlue()));
+                    }                
+                    setupRendering(g2, quality, stroke, color);
+                 // End       
                     if (i % 300 == 0){
                         comp.fireProgressEvent(new ProgressEvent(comp, ProgressEvent.PROGRESS_UPDATE, ((float)i)/comp.getNumRecords(), "rendering " + modestr));
                     }
@@ -298,7 +312,7 @@ class RenderThread extends Thread {
                         }
 
                         if (secondPass) {
-                            ui.drawRecord(g2, comp, i, progressiveStartAxis, progressiveStopAxis);
+                            ui.drawRecord(g2, comp, i, progressiveStartAxis, progressiveStopAxis); // lines drawing
                         }
                         else {
                             ui.drawRecord(g2, comp, i, startAxis, stopAxis);
@@ -331,7 +345,7 @@ class RenderThread extends Thread {
                     }
 
                     comp.fireProgressEvent(new ProgressEvent(comp, ProgressEvent.PROGRESS_FINISH, 1.0f, "rendering " + modestr));
-                    comp.repaint();
+                    comp.repaint(); // Affichage des lignes
 
                     //System.out.println("RenderThread: paint finished...");
 

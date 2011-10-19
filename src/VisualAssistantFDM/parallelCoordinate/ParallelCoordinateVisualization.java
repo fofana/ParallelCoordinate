@@ -173,16 +173,12 @@ private void jButton1openItemActionPerformed(java.awt.event.ActionEvent evt) {//
                 currentPath = chooser.getSelectedFile().getParentFile();
                 urltext = "file:///" + chooser.getSelectedFile().getAbsolutePath();
                 filePath = chooser.getSelectedFile().getAbsolutePath().toString();
-                //final File Fichier = chooser.getSelectedFile();
-                File file= new File(filePath);               
                 urltext = urltext.replace('\\','/');
                 urlField.setText(urltext);
                 try {
                     XMLFile x = new XMLFile(new URL(urltext));
                     x.readXMLContents(filePath);
-                    //int width = x.getNumDimensions() * ;
                     parallelDisplay.setModel(x);
-                    //parallelDisplay.setSize(WIDTH, option)
                     setTitle("Parvis - " + x.getName());
                     fileName.setText(x.getName());
                 }

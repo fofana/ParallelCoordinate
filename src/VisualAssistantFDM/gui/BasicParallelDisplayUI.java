@@ -645,7 +645,7 @@ public class BasicParallelDisplayUI extends ParallelDisplayUI implements MouseLi
             }
         }
     }
-
+     
     /**
      * Helper function, returns the y value (on screen) for a given record. Scale
      * factors and translation is applied.

@@ -63,8 +63,7 @@ public class ParallelDisplay extends JComponent implements ChangeListener {
     protected float brushValues[] = null;
 
     /** Our model. */
-    private XMLFile model;
-
+    private XMLFile model;   
     /** The mode of interaction we are in.*/
     protected int editMode = 0;
 
@@ -322,7 +321,7 @@ public class ParallelDisplay extends JComponent implements ChangeListener {
      *
      * @return The model that is currently displayed ba the component.
      */
-    protected ParallelSpaceModel getModel(){
+    protected XMLFile getModel(){
         return model;
     }
 
@@ -713,8 +712,8 @@ public class ParallelDisplay extends JComponent implements ChangeListener {
         preferences.put("histogram", new Boolean(false));
         preferences.put("histogramBins", new Integer(10));
         preferences.put("histogramWidth", new Integer(HISTO_TOTALREC));
-        preferences.put("recordColor", Color.red); // Line's color
-        preferences.put("brushColor", Color.black);
+        preferences.put("recordColor",  Color.black); // Line color
+        preferences.put("brushColor", Color.black); 
     }
 
     public void setFloatPreference(String key, float val){
@@ -731,7 +730,11 @@ public class ParallelDisplay extends JComponent implements ChangeListener {
         Object obj = new Boolean(val);
         preferences.put(key, obj);
     }
-
+    
+    public void setColorPreference(String key, int r, int g, int b){
+        Object obj = new Color(r,g,b);
+        preferences.put(key, obj);
+    }
     public void setPreference(String key, Object val){
         preferences.put(key, val);
     }
