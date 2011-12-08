@@ -5,7 +5,6 @@
 
 package VisualAssistantFDM.file;
 
-import file.*;
 import VisualAssistantFDM.visualisation.ui.Visualisation;
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +51,8 @@ public class XMLFile extends SimpleParallelSpaceModel  {
     private List<Visualisation> listAttributNumeric;
     private int nbClasse; 
     private List<Integer> recordClasse;    
+    private float[] tabMinAxis;
+    private float[] tabMaxAxis;
 
     /**
      * Creates a new STFFile with the given url. The content is not read until
@@ -131,15 +132,14 @@ public class XMLFile extends SimpleParallelSpaceModel  {
 //        }
 //    }
 public void readStructure() throws Exception{
-        List<Visualisation> xmlListe = new ArrayList<Visualisation>();
+        List<Visualisation> xmlListe = new ArrayList<Visualisation>();        
         SAXBuilder sxb = new SAXBuilder();
         File xmlFile = new File(xml);
         document = sxb.build(xmlFile);
         racine = (Element) document.getRootElement();
         List listAttributes = racine.getChild("structure").getChildren("attribute");
         bytesRead = listAttributes.size();
-        Iterator i = listAttributes.iterator();
-
+        Iterator i = listAttributes.iterator();        
        while(i.hasNext()) {
             Visualisation methode = new Visualisation();
             Element courant = (Element)i.next();

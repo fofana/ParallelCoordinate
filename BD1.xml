@@ -1684,6 +1684,19 @@
     </datum>
   </data>
   <visualizations />
-  <geneticalgorithm />
+  <geneticalgorithm>
+    <nuage3D>
+      <profilDefaut>profil9</profilDefaut>
+    </nuage3D>
+    <CoordonneesParalleles>
+      <profil10 valeur="profil10">
+        <Axis1>Attribut1</Axis1>
+        <Axis2>Attribut3</Axis2>
+        <Axis3>Attribut2</Axis3>
+        <Axis4>Attribut4</Axis4>
+        <classe>Classe</classe>
+      </profil10>
+    </CoordonneesParalleles>
+  </geneticalgorithm>
 </database>
 

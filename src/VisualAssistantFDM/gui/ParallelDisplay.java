@@ -119,7 +119,7 @@ public class ParallelDisplay extends JComponent implements ChangeListener {
         setModel(model);
 
         setMinimumSize(new Dimension(100, 100));
-        setPreferredSize(new Dimension(700,400));
+        setPreferredSize(new Dimension(800,400));
 
         setBackground(Color.white);
         setDoubleBuffered(false);

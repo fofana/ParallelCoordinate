@@ -13,19 +13,19 @@ package VisualAssistantFDM.parallelCoordinate;
 import VisualAssistantFDM.file.XMLFile;
 import VisualAssistantFDM.visualisation.ui.Visualisation;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.JFileChooser;
 //import model.ParallelSpaceModel;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.mediavirus.parvis.file.STFFile;
-import VisualAssistantFDM.gui.ParallelDisplay;
+import VisualAssistantFDM.visualisation.ui.Appariement;
+import VisualAssistantFDM.visualisation.ui.Matching;
+import VisualAssistantFDM.io.LoadVisualizations;
+import java.io.FileOutputStream;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  *
@@ -33,11 +33,12 @@ import VisualAssistantFDM.gui.ParallelDisplay;
  */
 public class ParallelCoordinateVisualization extends javax.swing.JFrame {
     private List<Visualisation> listAttribut;
-    private List<Visualisation> listAttributNumeric;
+    //private List<Visualisation> listAttributNumeric;
     private Document document;
     private Element racine;
     private String filePath="";
     private String urltext="";
+    private XMLFile model;
     /** Creates new form ParallelCoordinateVisualization */
     public ParallelCoordinateVisualization() {
         initComponents();
@@ -88,7 +89,7 @@ public class ParallelCoordinateVisualization extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addGap(76, 76, 76)
                 .addComponent(datasourceLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(urlField, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -100,8 +101,8 @@ public class ParallelCoordinateVisualization extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(31, 31, 31)
-                    .addComponent(parallelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 809, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(11, Short.MAX_VALUE)))
+                    .addComponent(parallelDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 838, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(18, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,9 +110,9 @@ public class ParallelCoordinateVisualization extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(fileName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(urlField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(datasourceLabel)
-                        .addComponent(urlField, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                         .addComponent(jButton1)))
                 .addContainerGap(508, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,19 +135,89 @@ private void urlFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
                     parallelDisplay.setModel(x);
                     //parallelDisplay.setSize(WIDTH, option)
                     setTitle("Parvis - " + x.getName());
+                    model = x;
         }
         catch (Exception e){
             System.out.println(e.toString() + e.getMessage());
         }
 }//GEN-LAST:event_urlFieldActionPerformed
 
- public  void getAttributNumeric(){
-     listAttributNumeric = new ArrayList<Visualisation>();
-     for (Visualisation visualisation : listAttribut) {
-         if (visualisation.getType().equals("numeric"))
-             listAttributNumeric.add(visualisation);
-     }
- }
+//public void UpdateXmlFile() throws Exception{
+//    listAttribut = new ArrayList<Visualisation>();
+//    listAttribut= new Matching().getListe(filePath);
+//    // On trie la liste d'attribut de données
+//    List<Visualisation> listeAttrData = new Matching().getListeTri(listAttribut);
+//    //On recupère les attributs visuels
+//    List<Visualisation> listViusaAttribute = new LoadVisualizations().getIdMethode(10);
+//    File fichier = new File(filePath);
+//    try {
+//            
+//            new UpdateXMLFile(filePath);
+//            }catch(Exception e){
+//                System.out.println();
+//            }
+//            //loading = new LoadingBox("Load & Display Data on real-time");
+//            //loading = new JProgressBar();
+//            for(int j=1; j<=9; j++){
+//            //Barre de progression pour la lecture:
+//            //getLoading();
+//            //getLoading().getProgressBar().setValue((int) (j / (float) (9) * 100));
+//            //getLoading().setAction("Lecture des elements du profil" + j);
+//                List<Appariement> individuResultatMEC = GenerateMatchingWithProfil(j);
+//                String shape = new LoadVisualizations().getIdElement(j);
+//                AddNewUserPofilSettingsGA(j, fichier, listViusaAttribute, individuResultatMEC, shape);
+//                enregistreFichier(filePath);
+//            }
+//}
+
+   
+//On enregsitre notre nouvelle arborescence dans le fichier d'origine dans un format classique.
+    public void enregistreFichier(String fichier) throws Exception
+   {
+         XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+         sortie.output(document, new FileOutputStream(fichier));
+
+   }
+ public List<Appariement> GenerateMatchingWithProfil(int indiceVisualisation) throws Exception {
+
+        //r�cuperer la description des attributs de donn�es à partir de la partie structure du fichier XML
+        List<Visualisation> dataAttributeliste = new Matching().getListe(filePath);
+        //trier les attributs de donn�es selon leur type puis leur importance
+        dataAttributeliste = new Matching().getListeTri(dataAttributeliste);
+        //r�cuperer les attributs visuels depuis la base de donn�es pour chaque visualisation
+        List<Visualisation> visualAttributeliste = new LoadVisualizations().getIdMethode(indiceVisualisation);
+        //r�cuperer le matching attributs de donn�es / attributs visuels
+        List<Appariement> resultaMEC = this.getMatching(dataAttributeliste, visualAttributeliste);
+        //initialiser le DefaultTableModel pour viusaliser le r�sultat du matching attributs de donn�es / attributs visuels
+        
+        return resultaMEC;
+        
+    }
+
+
+public List<Appariement> getMatching(List<Visualisation> listeDataAttribute, List<Visualisation> listVisualAttribute) throws Exception{
+
+        List<Appariement> MatchingListresult = new ArrayList<Appariement>();
+        for(int i=0; i<listVisualAttribute.size(); i++){
+            a : for(int j=0; j<listeDataAttribute.size(); j++){
+                if(listVisualAttribute.get(i).getType().toString().equals(listeDataAttribute.get(j).getType())){
+                    Appariement listAppariement = new Appariement();
+                    listAppariement.setName_v_data(listVisualAttribute.get(i).getName());
+                    listAppariement.setType_v_data(listVisualAttribute.get(i).getType());
+                    listAppariement.setImportance_v_data(listVisualAttribute.get(i).getImportance());
+                    listAppariement.setName_data(listeDataAttribute.get(j).getName());
+                    listAppariement.setType_data(listeDataAttribute.get(j).getType());
+                    listAppariement.setImportance_data(listeDataAttribute.get(j).getImportance());
+                    MatchingListresult.add(listAppariement);
+                    listeDataAttribute.remove(j);
+                    break a;
+                }
+            }
+        }
+
+        return MatchingListresult;
+
+    }
 
 private void jButton1openItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1openItemActionPerformed
         JFileChooser chooser = new JFileChooser();
@@ -228,7 +299,7 @@ private void jButton1openItemActionPerformed(java.awt.event.ActionEvent evt) {//
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel datasourceLabel;
-    private javax.swing.JLabel fileName;  
+    private javax.swing.JLabel fileName;
     private javax.swing.JButton jButton1;
     private VisualAssistantFDM.gui.ParallelDisplay parallelDisplay;
     private javax.swing.JTextField urlField;

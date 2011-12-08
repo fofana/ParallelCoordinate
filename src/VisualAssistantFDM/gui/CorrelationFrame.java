@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 package VisualAssistantFDM.gui;
 
-import gui.*;
 import javax.swing.*;
 import VisualAssistantFDM.model.Brush;
 
